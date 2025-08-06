@@ -48,7 +48,7 @@ const UpsertCampaign = () => {
   }
 
   return (
-    <div>
+    <div className="mx-auto px-4 py-2 max-w-2xl container">
       <Card>
         <CardHeader className="font-semibold text-lg">{headerText}</CardHeader>
         <CardBody>
