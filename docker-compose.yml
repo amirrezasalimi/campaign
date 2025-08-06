@@ -21,7 +21,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      # If your Next.js app needs to talk to the server, set the API URL env here
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
     depends_on:
       - server
     restart: unless-stopped

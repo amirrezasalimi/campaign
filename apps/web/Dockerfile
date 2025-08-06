@@ -12,6 +12,11 @@ COPY package.json ./
 # COPY package-lock.json ./
 RUN npm install
 
+
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SERVER_URL
+
+
 # Copy source and build
 COPY . .
 RUN npm run build
