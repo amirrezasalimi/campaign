@@ -17,9 +17,7 @@ RUN bun run db:generate && bun run db:migrate
 # 4) Compile / bundle into dist/
 RUN bun run build
 
-# 5) Prune dev-only deps and leave only production packages
-RUN rm -rf node_modules \
-    && bun install --frozen-lockfile --production
+RUN bun install 
 
 # 6) Set env and expose
 ENV NODE_ENV=production
