@@ -31,6 +31,7 @@ export const paginationQuerySchema = z.object({
     .optional()
     .default("created_at"),
   sort_type: z.enum(["asc", "desc"]).optional().default("asc"),
+  status: CampaignStatusEnum.optional(),
 });
 
 export const idParamSchema = z.object({

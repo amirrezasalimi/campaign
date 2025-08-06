@@ -17,7 +17,7 @@ import type {
   Campaign,
   CampaignStatus,
 } from "@/types/campaigns";
-import { eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, like, sql } from "drizzle-orm";
 
 const router: ExpressRouter = Router();
 
@@ -63,49 +63,78 @@ router.post("/add", async (req, res) => {
   }
 });
 
-// GET /campaigns?page=&take=&title=&sort_key=&sort_type=
+// GET /campaigns?page=&take=&title=&status=&sort_key=&sort_type=
 router.get("/", async (req, res) => {
   try {
-    const { page, take, title, sort_key, sort_type } =
+    // Extend parsed query to include optional status
+    const { page, take, title, sort_key, sort_type, status } =
       paginationQuerySchema.parse(req.query);
 
     // Pagination
     const offset = (page - 1) * take;
 
-    // Optional title filter
-    const whereClause = title
-      ? sql`${campaigns.title} LIKE ${"%" + title + "%"}`
-      : undefined;
+    // title -> ilike('%title%'), status -> eq(status), combined via and()
+    const clauses = [
+      title ? like(campaigns.title, `%${title}%`) : undefined,
+      status ? eq(campaigns.status, status as string) : undefined,
+    ].filter(Boolean);
 
-    // Sorting
-    const orderBy =
+    const whereClause =
+      clauses.length === 0
+        ? undefined
+        : clauses.length === 1
+        ? clauses[0]
+        : and(...clauses);
+
+    // Sorting (Drizzle-native)
+    const sortExpr =
       sort_key === "title"
-        ? sql`${campaigns.title} ${sql.raw(sort_type.toUpperCase())}`
+        ? sort_type === "asc"
+          ? asc(campaigns.title)
+          : desc(campaigns.title)
         : sort_key === "reward"
-        ? sql`${campaigns.reward} ${sql.raw(sort_type.toUpperCase())}`
+        ? sort_type === "asc"
+          ? asc(campaigns.reward)
+          : desc(campaigns.reward)
         : sort_key === "status"
-        ? sql`${campaigns.status} ${sql.raw(sort_type.toUpperCase())}`
+        ? sort_type === "asc"
+          ? asc(campaigns.status)
+          : desc(campaigns.status)
         : sort_key === "endDate"
-        ? sql`${campaigns.endDate} ${sql.raw(sort_type.toUpperCase())}`
-        : sql`${campaigns.created_at} ${sql.raw(sort_type.toUpperCase())}`;
+        ? sort_type === "asc"
+          ? asc(campaigns.endDate)
+          : desc(campaigns.endDate)
+        : sort_type === "asc"
+        ? asc(campaigns.created_at)
+        : desc(campaigns.created_at);
 
+    // Fetch page items
     const rows = await db
       .select()
       .from(campaigns)
       .where(whereClause)
-      .orderBy(orderBy)
+      .orderBy(sortExpr)
       .limit(take)
       .offset(offset);
 
+    // Count total rows with the same filters
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(campaigns)
+      .where(whereClause as any);
+
+    const total = Number(count) || 0;
+    const total_pages = Math.max(1, Math.ceil(total / take));
+
     // Normalize DB rows to Campaign[] by narrowing status to enum
-    const items = rows.map((r: any) => ({
+    const items = rows.map((r) => ({
       ...r,
       status: r.status as string as CampaignStatus,
     })) as Campaign[];
 
     const response: ListCampaignsResponse = {
       success: true,
-      data: { items, nextCursor: undefined },
+      data: { items, total_pages },
     };
     res.status(200).json(response);
   } catch (err) {
@@ -116,6 +145,8 @@ router.get("/", async (req, res) => {
       } as const;
       return res.status(400).json(response);
     }
+    console.log("Error fetching campaigns:", err);
+
     const response = {
       success: false,
       error: "Failed to fetch campaigns",

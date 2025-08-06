@@ -39,7 +39,7 @@ export interface ApiError {
 
 export type AddCampaignResponse = ApiSuccess<Campaign> | ApiError;
 export type ListCampaignsResponse =
-  | ApiSuccess<{ items: Campaign[]; nextCursor?: string }>
+  | ApiSuccess<{ items: Campaign[]; nextCursor?: string; total_pages: number }>
   | ApiError;
 export type RemoveCampaignResponse = ApiSuccess<{ id: string }> | ApiError;
 export type EditCampaignResponse = ApiSuccess<Campaign> | ApiError;
