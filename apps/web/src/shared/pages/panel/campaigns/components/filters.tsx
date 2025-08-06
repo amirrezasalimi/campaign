@@ -1,7 +1,8 @@
 "use client";
 
 import { Input, Select, SelectItem } from "@heroui/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDebounce } from "use-debounce";
 import { CampaignStatus } from "@/shared/types/campaign/campaign";
 
 type Props = {
@@ -12,9 +13,17 @@ type Props = {
 };
 
 const CampaignFilters = ({ search, status, setSearch, setStatus }: Props) => {
-  const [searchInput, setSearchInput] = useState(search ?? "");
+  const [localSearch, setLocalSearch] = useState(search ?? "");
+  const [debouncedSearch] = useDebounce(localSearch, 300);
 
-  // status options preserved from index.tsx
+  useEffect(() => {
+    setLocalSearch(search ?? "");
+  }, [search]);
+
+  useEffect(() => {
+    setSearch(debouncedSearch ?? "");
+  }, [debouncedSearch, setSearch]);
+
   const statusOptions = useMemo(
     () => [
       { key: "all", label: "All" },
@@ -30,17 +39,12 @@ const CampaignFilters = ({ search, status, setSearch, setStatus }: Props) => {
       <Input
         label="Search"
         placeholder="Search campaigns..."
-        value={searchInput}
-        onValueChange={(val) => setSearchInput(val)}
-        onBlur={() => setSearch(searchInput)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") setSearch(searchInput);
-        }}
+        value={localSearch}
+        onValueChange={setLocalSearch}
         variant="bordered"
         isClearable
         onClear={() => {
-          setSearchInput("");
-          setSearch("");
+          setLocalSearch("");
         }}
         className="md:flex-1"
       />

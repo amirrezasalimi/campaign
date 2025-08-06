@@ -4,14 +4,12 @@ import {
   Card,
   CardBody,
   Button,
-  Input,
   Select,
   SelectItem,
   Link,
 } from "@heroui/react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import useCampaigns from "./hooks/campaigns";
-import { CampaignStatus } from "@/shared/types/campaign/campaign";
 import { CampaignSortFields } from "@/shared/types/campaign/list-request";
 import CampaignFilters from "./components/filters";
 import { PlusIcon } from "lucide-react";

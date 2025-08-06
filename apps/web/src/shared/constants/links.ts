@@ -1,4 +1,5 @@
 const LINKS = {
+  PANEL: "/panel",
   ADD_CAMPAIGN: "/panel/add-campaign",
   CAMPAIGN_EDIT: "/panel/edit-campaign/{id}",
   CAMPAIGN_LIST: "/panel/campaigns",

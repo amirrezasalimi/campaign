@@ -133,7 +133,9 @@ export default function PanelLayout({
               />
             </svg>
           </Button>
-          <h1 className="font-semibold text-base">Panel</h1>
+          <Link href={LINKS.PANEL}>
+            <h1 className="font-semibold text-base">Panel</h1>
+          </Link>
           <span className="w-8" />
         </div>
       </div>
@@ -142,7 +144,9 @@ export default function PanelLayout({
         {/* Desktop sidebar */}
         <aside className="hidden md:block bg-white border-neutral-300 border-r w-64 shrink-0">
           <div className="p-4 border-neutral-300 border-b">
-            <h1 className="font-semibold text-lg">Panel</h1>
+            <Link href={LINKS.PANEL}>
+              <h1 className="font-semibold text-lg">Panel</h1>
+            </Link>
           </div>
           <nav className="p-2">
             <MenuList />
