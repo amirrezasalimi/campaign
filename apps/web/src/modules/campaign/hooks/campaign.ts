@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import CampaignServices from "../../../../services/campaign";
-import type Campaign from "../../../../types/campaign/campaign";
 import { useRouter } from "next/navigation";
-import LINKS from "../../../../constants/links";
 import { addToast } from "@heroui/react";
+import type Campaign from "@/shared/types/campaign/campaign";
+import CampaignServices from "@/shared/services/campaign";
+import LINKS from "@/shared/constants/links";
 
 type Options = {
   id: string | undefined;

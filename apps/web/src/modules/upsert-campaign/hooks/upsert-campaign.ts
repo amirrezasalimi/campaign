@@ -2,14 +2,14 @@
 
 import { useMemo } from "react";
 import { z } from "zod";
-import CampaignServices from "../../../../services/campaign";
-import type Campaign from "../../../../types/campaign/campaign";
-import LINKS from "../../../../constants/links";
-import makeUrl from "../../../../utils/make_url";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addToast } from "@heroui/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import type Campaign from "@/shared/types/campaign/campaign";
+import CampaignServices from "@/shared/services/campaign";
+import makeUrl from "@/shared/utils/make_url";
+import LINKS from "@/shared/constants/links";
 
 export const schema = z.object({
   title: z.string().min(1, "Title is required"),

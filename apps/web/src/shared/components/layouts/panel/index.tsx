@@ -57,7 +57,7 @@ export default function PanelLayout({
       );
       const path = url.pathname;
       // Check if the current pathname starts with the href path
-      if (pathname.startsWith(path)) return true;
+      if (pathname && pathname.startsWith(path)) return true;
     } catch {}
     return false;
   };

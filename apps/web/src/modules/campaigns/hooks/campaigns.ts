@@ -140,7 +140,7 @@ const useCampaigns = () => {
     const newQuery = writeToSearchParams();
 
     if (newQuery !== lastAppliedQueryRef.current) {
-      router.replace(newQuery ? `${pathname}?${newQuery}` : pathname);
+      router.replace(newQuery ? `${pathname}?${newQuery}` : `${pathname}`);
       lastAppliedQueryRef.current = newQuery;
     }
   }, [page, limit, search, status, orderBy, order, pathname]);
@@ -187,8 +187,8 @@ const useCampaigns = () => {
     setOrderBy(undefined);
     setOrder(undefined);
 
-    router.replace(pathname);
     lastAppliedQueryRef.current = "";
+    if (pathname) router.replace(pathname);
   };
 
   return {

@@ -1,3 +1,3 @@
-import UpsertCampaign from "@/shared/pages/panel/upsert-campaign";
+import UpsertCampaign from "@/modules/upsert-campaign";
 
 export default UpsertCampaign;

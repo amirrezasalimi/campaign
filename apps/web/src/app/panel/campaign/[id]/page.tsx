@@ -1,3 +1,3 @@
-import Campaign from "@/shared/pages/panel/campaign";
+import Campaign from "@/modules/campaign";
 
 export default Campaign;
