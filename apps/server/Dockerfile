@@ -1,28 +1,28 @@
-# Bun-based production image (single-stage as requested)
 FROM oven/bun:latest
 
 WORKDIR /app
 
-# Set production env
-ENV NODE_ENV=production
-# Default port, can be overridden by compose
-ENV PORT=3000
-
-# Copy manifests first for better layer caching
+# 1) Install all deps (so dev-tools like drizzle-kit and tsc are available)
 COPY package.json bun.lockb* ./
-# Install prod deps only
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile
 
-# Copy source code
+# 2) Copy your source
 COPY . .
 
+# 3) Run codegen & migrations
+RUN bun run db:generate && bun run db:migrate
 
-# Add entrypoint to run generate + migrate then start
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# 4) Compile / bundle into dist/
+RUN bun run build
 
-# Expose server port
+# 5) Prune dev-only deps and leave only production packages
+RUN rm -rf node_modules \
+    && bun install --frozen-lockfile --production
+
+# 6) Set env and expose
+ENV NODE_ENV=production
+ENV PORT=3000
 EXPOSE 3000
 
-# Start: run db:generate and db:migrate before launching server
-ENTRYPOINT ["docker-entrypoint.sh"]
+# 7) Runtime: start your compiled server
+CMD ["bun", "run", "start"]

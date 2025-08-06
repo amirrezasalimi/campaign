@@ -1,0 +1,25 @@
+# Exclude dependencies and VCS
+node_modules
+.git
+.gitignore
+
+# Build artifacts
+.next
+out
+dist
+build
+coverage
+
+# Env and logs
+.env
+*.env
+*.log
+
+# Docker files not needed in context
+Dockerfile
+docker-compose.yml
+
+# OS/editor junk
+.DS_Store
+.vscode
+.idea
