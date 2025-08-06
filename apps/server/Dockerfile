@@ -16,8 +16,6 @@ RUN bun install --frozen-lockfile --production
 # Copy source code
 COPY . .
 
-# Build TypeScript to dist using tsdown (defined in package.json)
-RUN bun run build
 
 # Add entrypoint to run generate + migrate then start
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
