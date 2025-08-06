@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile
+    image: campaign-server:prod
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Uncomment and set any required envs; compose will pass through if defined in host
+      DATABASE_URL: db/local.db
+    volumes:
+      - ./apps/server/db:/app/db
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    image: campaign-web:prod
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      # If your Next.js app needs to talk to the server, set the API URL env here
+    depends_on:
+      - server
+    restart: unless-stopped
