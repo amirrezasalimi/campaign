@@ -13,6 +13,7 @@ export const campaigns = sqliteTable("campaigns", {
     .primaryKey()
     .$defaultFn(() => uuidv4()),
   title: text("title").notNull(),
+  description: text("description").notNull(),
   reward: integer("reward").notNull(),
   status: text("status").default(CampaignStatus.ACTIVE).notNull(),
   endDate: text("end_date").notNull(),

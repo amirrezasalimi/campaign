@@ -11,11 +11,11 @@ app.use(
   })
 );
 
+app.use(express.json());
 
-
-
-app.use(express.json())
-
+// Mount campaigns router at /campaigns
+import campaignsRouter from "@/routers";
+app.use("/campaigns", campaignsRouter);
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");
