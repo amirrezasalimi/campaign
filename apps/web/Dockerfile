@@ -6,6 +6,7 @@ ENV NODE_ENV=production
 ENV PORT=3001
 
 COPY package.json ./
+RUN npm install --frozen-lockfile --production
 
 # Copy source and build
 COPY . .
