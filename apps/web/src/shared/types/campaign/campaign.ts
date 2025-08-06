@@ -1,4 +1,8 @@
-export type CampaignStatus = "active" | "inactive" | "completed";
+export enum CampaignStatus {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+  COMPLETED = "completed",
+}
 export default interface Campaign {
   id?: string;
   title: string;
