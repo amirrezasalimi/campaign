@@ -13,7 +13,6 @@ export default function MainLayout({
     <QueryClientProvider client={queryClient}>
       <HeroUIProvider>
         {children}
-
         <ToastProvider />
       </HeroUIProvider>
     </QueryClientProvider>
