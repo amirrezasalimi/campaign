@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import CampaignServices from "@/shared/services/campaign";
 import type { CampaignStatus } from "@/shared/types/campaign/campaign";
+import { addToast } from "@heroui/react";
 
 const useCampaigns = () => {
   const [page, setPage] = useState(1);
@@ -29,6 +30,27 @@ const useCampaigns = () => {
     queryFn: async () => {
       const res = await CampaignServices.list(params);
       return res.data?.data;
+    },
+  });
+
+  // track which id is currently being removed
+  const [removingId, setRemovingId] = useState<string | null>(null);
+
+  // delete mutation with optimistic update
+  const removeMutation = useMutation({
+    mutationFn: CampaignServices.delete,
+    onMutate: (id: string) => {
+      setRemovingId(id);
+    },
+    onSuccess() {
+      query.refetch();
+      addToast({
+        title: "Campaign deleted successfully",
+        color: "success",
+      });
+    },
+    onSettled() {
+      setRemovingId(null);
     },
   });
 
@@ -71,6 +93,11 @@ const useCampaigns = () => {
     nextPage,
     prevPage,
     reset,
+
+    // remove
+    remove: removeMutation.mutate,
+    removing: removeMutation.isPending,
+    removingId,
   };
 };
 

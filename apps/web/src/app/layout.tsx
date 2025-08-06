@@ -8,7 +8,7 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 export const metadata: Metadata = {
-  title: "campaign",
+  title: "Campaign Manager",
   description: "campaign",
 };
 

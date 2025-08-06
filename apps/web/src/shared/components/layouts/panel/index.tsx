@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import LINKS from "../../../constants/links";
 import { usePathname } from "next/navigation";
@@ -44,8 +46,8 @@ export default function PanelLayout({
     <div className="bg-gray-50 w-full min-h-screen">
       <div className="flex w-full min-h-screen">
         {/* sidebar */}
-        <aside className="bg-white border-r w-64 shrink-0">
-          <div className="p-4 border-b">
+        <aside className="bg-white border-neutral-300 border-r w-64 shrink-0">
+          <div className="p-4 border-neutral-300 border-b">
             <h1 className="font-semibold text-lg">Panel</h1>
           </div>
           <nav className="p-2">
@@ -56,7 +58,7 @@ export default function PanelLayout({
                     {section.label}
                   </div>
                   {section.children?.length ? (
-                    <ul className="flex flex-col gap-2 mb-3">
+                    <ul className="flex flex-col gap-1 mb-3">
                       {section.children.map((item) => {
                         const active = isActive(item.href);
                         return (

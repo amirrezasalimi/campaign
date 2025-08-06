@@ -1,0 +1,63 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import CampaignServices from "../../../../services/campaign";
+import type Campaign from "../../../../types/campaign/campaign";
+import { useRouter } from "next/navigation";
+import LINKS from "../../../../constants/links";
+import { addToast } from "@heroui/react";
+
+type Options = {
+  id: string | undefined;
+  enabled?: boolean;
+};
+
+type UseCampaign = {
+  data: Campaign | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  error: unknown;
+  refetch: () => void;
+  isRefetching: boolean;
+  deleteCampaign: () => void;
+  isDeleting: boolean;
+};
+
+const useCampaign = ({ id }: Options): UseCampaign => {
+  const qc = useQueryClient();
+  const router = useRouter();
+
+  const query = useQuery<Campaign>({
+    queryKey: ["campaign", id],
+    queryFn: async () => {
+      const res = await CampaignServices.get(id as string);
+      return res.data.data as Campaign;
+    },
+  });
+
+  const { mutate: deleteCampaign, isPending: isDeleting } = useMutation({
+    mutationFn: async () => {
+      await CampaignServices.delete(id as string);
+    },
+    onSuccess: async () => {
+      router.push(LINKS.CAMPAIGN_LIST);
+      addToast({
+        title: "Campaign deleted successfully",
+        color: "success",
+      });
+    },
+  });
+
+  return {
+    data: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    refetch: () => {
+      void query.refetch();
+    },
+    isRefetching: query.isRefetching,
+    deleteCampaign,
+    isDeleting,
+  };
+};
+
+export default useCampaign;

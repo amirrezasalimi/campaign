@@ -20,6 +20,7 @@ import type Campaign from "@/shared/types/campaign/campaign";
 import LINKS from "@/shared/constants/links";
 import makeUrl from "@/shared/utils/make_url";
 import type CampaignListResponse from "@/shared/types/campaign/list-response";
+import { Edit, Eye, Trash, View } from "lucide-react";
 
 type Order = "asc" | "desc";
 
@@ -38,6 +39,11 @@ type CampaignResultProps = {
   order?: Order | null;
   setOrderBy: (field: CampaignSortFields) => void;
   setOrder: (order: Order) => void;
+
+  // actions
+  onRemove?: (id: string) => void;
+  removing?: boolean;
+  removingId?: string | null;
 };
 
 const statusColorMap: Record<
@@ -94,6 +100,9 @@ const CampaignResult = ({
   order,
   setOrderBy,
   setOrder,
+  onRemove,
+  removing,
+  removingId,
 }: CampaignResultProps) => {
   const items = data?.items ?? [];
   const total = data?.total_pages ?? 0;
@@ -204,9 +213,39 @@ const CampaignResult = ({
                     as={Link}
                     size="sm"
                     variant="flat"
+                    color="primary"
                     href={makeUrl(LINKS.CAMPAIGN_DETAIL, { id: item.id })}
+                    startContent={<Eye className="size-4" />}
                   >
                     View
+                  </Button>
+                  <Button
+                    as={Link}
+                    size="sm"
+                    variant="flat"
+                    color="warning"
+                    href={makeUrl(LINKS.CAMPAIGN_EDIT, { id: item.id })}
+                    startContent={<Edit className="size-4" />}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    color="danger"
+                    isDisabled={!!removing}
+                    isLoading={removing && removingId === item.id}
+                    onPress={() => {
+                      if (!onRemove) return;
+                      if (typeof window !== "undefined") {
+                        const ok = window.confirm("Remove this campaign?");
+                        if (!ok) return;
+                      }
+                      onRemove(String(item.id));
+                    }}
+                    startContent={<Trash className="size-4" />}
+                  >
+                    Delete
                   </Button>
                 </div>
               </TableCell>

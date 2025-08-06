@@ -1,4 +1,3 @@
-"use client";
 import PanelLayout from "@/shared/components/layouts/panel";
 
 export default function Layout({

@@ -1,5 +1,5 @@
 "use client";
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -11,7 +11,11 @@ export default function MainLayout({
 }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <HeroUIProvider>{children}</HeroUIProvider>
+      <HeroUIProvider>
+        {children}
+
+        <ToastProvider />
+      </HeroUIProvider>
     </QueryClientProvider>
   );
 }

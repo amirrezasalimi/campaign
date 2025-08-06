@@ -7,14 +7,16 @@ import {
   Input,
   Select,
   SelectItem,
+  Link,
 } from "@heroui/react";
 import { useMemo, useState } from "react";
 import useCampaigns from "./hooks/campaigns";
 import { CampaignStatus } from "@/shared/types/campaign/campaign";
 import { CampaignSortFields } from "@/shared/types/campaign/list-request";
 import CampaignFilters from "./components/filters";
-
+import { PlusIcon } from "lucide-react";
 import CampaignResult from "./components/result";
+import LINKS from "@/shared/constants/links";
 
 const Campaigns = () => {
   const {
@@ -37,36 +39,11 @@ const Campaigns = () => {
     setOrderBy,
     setOrder,
     reset,
+    // remove actions
+    remove,
+    removing,
+    removingId,
   } = useCampaigns();
-
-  const [searchInput, setSearchInput] = useState(search ?? "");
-
-  // options
-  const statusOptions = useMemo(
-    () => [
-      { key: CampaignStatus.ACTIVE, label: "Active" },
-      { key: CampaignStatus.INACTIVE, label: "Inactive" },
-      { key: CampaignStatus.COMPLETED, label: "Completed" },
-    ],
-    []
-  );
-
-  const sortFields = useMemo(
-    () => [
-      { key: CampaignSortFields.CREATED_AT, label: "Created At" },
-      { key: CampaignSortFields.END_DATE, label: "End Date" },
-      { key: CampaignSortFields.REWARD, label: "Reward" },
-    ],
-    []
-  );
-
-  const orderOptions = useMemo(
-    () => [
-      { key: "asc", label: "Ascending" },
-      { key: "desc", label: "Descending" },
-    ],
-    []
-  );
 
   const limits = useMemo(
     () => [
@@ -117,19 +94,30 @@ const Campaigns = () => {
               </Select>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Button
-                variant="flat"
-                onPress={() => {
-                  setSearchInput("");
-                  reset();
-                }}
-              >
-                Reset
-              </Button>
-              <div className="text-default-500 text-sm">
-                Page: {page} • Limit: {limit}
+            <div className="flex flex-row justify-between items-center w-full">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="flat"
+                  onPress={() => {
+                    reset();
+                  }}
+                >
+                  Reset
+                </Button>
+                <div className="text-default-500 text-sm">
+                  Page: {page} • Limit: {limit}
+                </div>
               </div>
+              <Button
+                as={Link}
+                href={LINKS.ADD_CAMPAIGN}
+                variant="solid"
+                color="primary"
+                className="w-fit"
+                startContent={<PlusIcon className="w-4 h-4" />}
+              >
+                Add Campaign
+              </Button>
             </div>
           </div>
 
@@ -137,7 +125,7 @@ const Campaigns = () => {
 
           {/* content */}
           <CampaignResult
-            data={data as any}
+            data={data}
             isLoading={isLoading}
             isFetching={isFetching}
             page={page}
@@ -152,9 +140,12 @@ const Campaigns = () => {
                 ? CampaignSortFields.REWARD
                 : null
             }
-            order={order ?? null}
+            order={order}
             setOrderBy={setOrderBy}
             setOrder={setOrder}
+            onRemove={remove}
+            removing={removing}
+            removingId={removingId}
           />
         </CardBody>
       </Card>
