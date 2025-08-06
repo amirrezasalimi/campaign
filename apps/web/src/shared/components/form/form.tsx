@@ -6,6 +6,7 @@ import {
   type FieldValues,
   type UseFormProps,
   type UseFormReturn,
+  type Resolver,
 } from "react-hook-form";
 
 interface FormProps<T extends FieldValues>
@@ -13,7 +14,8 @@ interface FormProps<T extends FieldValues>
   children: ReactNode;
   onSubmit: SubmitHandler<T>;
   defaultValues?: UseFormProps<T>["defaultValues"];
-  validationSchema?: UseFormProps<T>["resolver"];
+  // Allow resolver input to be broader than T (e.g., raw form values before coercion)
+  validationSchema?: Resolver<any, any, T>;
   mode?: UseFormProps<T>["mode"];
   criteriaMode?: UseFormProps<T>["criteriaMode"];
   shouldFocusError?: UseFormProps<T>["shouldFocusError"];
