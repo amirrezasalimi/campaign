@@ -9,6 +9,8 @@ RUN bun install --frozen-lockfile
 # 2) Copy your source
 COPY . .
 
+RUN mkdir -p ./db && touch ./db/local.db
+
 # 3) Run codegen & migrations
 RUN bun run db:generate && bun run db:migrate
 
