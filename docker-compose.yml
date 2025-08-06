@@ -8,7 +8,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      # Uncomment and set any required envs; compose will pass through if defined in host
       DATABASE_URL: file:./db/local.db
     volumes:
       - ./apps/server/db:/app/db
@@ -18,7 +17,10 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
-    environment:
+      args: # <-- Pass build args here
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+    environment: # <-- Runtime env vars here
       NODE_ENV: production
       PORT: 3001
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
