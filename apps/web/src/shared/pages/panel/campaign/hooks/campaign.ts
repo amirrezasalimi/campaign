@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import CampaignServices from "../../../../services/campaign";
 import type Campaign from "../../../../types/campaign/campaign";
 import { useRouter } from "next/navigation";
@@ -7,7 +7,6 @@ import { addToast } from "@heroui/react";
 
 type Options = {
   id: string | undefined;
-  enabled?: boolean;
 };
 
 type UseCampaign = {
@@ -22,7 +21,6 @@ type UseCampaign = {
 };
 
 const useCampaign = ({ id }: Options): UseCampaign => {
-  const qc = useQueryClient();
   const router = useRouter();
 
   const query = useQuery<Campaign>({
@@ -51,9 +49,7 @@ const useCampaign = ({ id }: Options): UseCampaign => {
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
-    refetch: () => {
-      void query.refetch();
-    },
+    refetch: query.refetch,
     isRefetching: query.isRefetching,
     deleteCampaign,
     isDeleting,

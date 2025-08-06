@@ -19,12 +19,7 @@ import { ArrowLeft, Pencil, Trash2, RefreshCw } from "lucide-react";
 const Campaign = () => {
   const params = useParams();
   const router = useRouter();
-  const id =
-    typeof params?.id === "string"
-      ? params.id
-      : Array.isArray(params?.id)
-      ? params?.id?.[0]
-      : undefined;
+  const id = params?.id as string | undefined;
 
   const {
     data,
@@ -172,7 +167,7 @@ const Campaign = () => {
               size="md"
               color="danger"
               variant="flat"
-              onPress={() => deleteCampaign()}
+              onPress={deleteCampaign}
               isDisabled={!id}
               isLoading={isDeleting}
               startContent={<Trash2 className="w-4 h-4" />}

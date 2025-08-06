@@ -41,7 +41,6 @@ export default function PanelLayout({
   // Close mobile drawer on route change
   useEffect(() => {
     onClose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const isActive = (href?: string) => {
