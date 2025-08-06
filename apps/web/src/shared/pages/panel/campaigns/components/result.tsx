@@ -13,14 +13,14 @@ import {
   Button,
   Link,
 } from "@heroui/react";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect, useState } from "react";
 import { CampaignStatus } from "@/shared/types/campaign/campaign";
 import { CampaignSortFields } from "@/shared/types/campaign/list-request";
 import type Campaign from "@/shared/types/campaign/campaign";
 import LINKS from "@/shared/constants/links";
 import makeUrl from "@/shared/utils/make_url";
 import type CampaignListResponse from "@/shared/types/campaign/list-response";
-import { Edit, Eye, Trash, View } from "lucide-react";
+import { Edit, Eye, Trash } from "lucide-react";
 
 type Order = "asc" | "desc";
 
@@ -44,6 +44,9 @@ type CampaignResultProps = {
   onRemove?: (id: string) => void;
   removing?: boolean;
   removingId?: string | null;
+
+  // responsive flag
+  isMobile?: boolean;
 };
 
 const statusColorMap: Record<
@@ -55,21 +58,34 @@ const statusColorMap: Record<
   [CampaignStatus.COMPLETED]: "warning",
 };
 
-type ColumnDef =
-  | { key: "title"; label: "Title"; isSortable?: false }
-  | { key: "status"; label: "Status"; isSortable?: false }
-  | { key: "reward"; label: "Reward"; isSortable: true }
-  | { key: "endDate"; label: "End"; isSortable: true }
-  | { key: "created_at"; label: "Created"; isSortable: true }
-  | { key: "actions"; label: "Actions"; isSortable?: false };
+type ColumnDef = (
+  | { key: "title"; label: "Title" }
+  | {
+      key: "status";
+      label: "Status";
+    }
+  | { key: "reward"; label: "Reward" }
+  | { key: "endDate"; label: "End" }
+  | {
+      key: "created_at";
+      label: "Created";
+    }
+  | {
+      key: "actions";
+      label: "Actions";
+    }
+) & {
+  isSortable?: boolean;
+  hideOnMobile?: boolean;
+};
 
 const columns: ColumnDef[] = [
-  { key: "title", label: "Title" },
-  { key: "status", label: "Status" },
-  { key: "reward", label: "Reward", isSortable: true },
-  { key: "endDate", label: "End", isSortable: true },
-  { key: "created_at", label: "Created", isSortable: true },
-  { key: "actions", label: "Actions" },
+  { key: "title", label: "Title", hideOnMobile: false },
+  { key: "status", label: "Status", hideOnMobile: true },
+  { key: "reward", label: "Reward", isSortable: true, hideOnMobile: true },
+  { key: "endDate", label: "End", isSortable: true, hideOnMobile: true },
+  { key: "created_at", label: "Created", isSortable: true, hideOnMobile: true },
+  { key: "actions", label: "Actions", hideOnMobile: false },
 ] as const;
 
 const uiToApiSort = {
@@ -106,6 +122,25 @@ const CampaignResult = ({
 }: CampaignResultProps) => {
   const items = data?.items ?? [];
   const total = data?.total_pages ?? 0;
+
+  // Internal mobile detection fallback if prop not provided
+  const [detectedMobile, setDetectedMobile] = useState<boolean>(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const query = "(max-width: 768px)";
+    const mql = window.matchMedia(query);
+
+    const update = () => setDetectedMobile(mql.matches);
+    update();
+    mql.addEventListener
+      ? mql.addEventListener("change", update)
+      : mql.addListener(update);
+    return () => {
+      mql.removeEventListener
+        ? mql.removeEventListener("change", update)
+        : mql.removeListener(update);
+    };
+  }, []);
 
   const sortDescriptor = useMemo(() => {
     const column =
@@ -175,7 +210,11 @@ const CampaignResult = ({
       >
         <TableHeader>
           {columns.map((col) => (
-            <TableColumn key={col.key} allowsSorting={!!col.isSortable}>
+            <TableColumn
+              key={col.key}
+              allowsSorting={!!col.isSortable}
+              className={col.hideOnMobile ? "hidden md:table-cell" : ""}
+            >
               {col.label}
             </TableColumn>
           ))}
@@ -194,8 +233,11 @@ const CampaignResult = ({
         >
           {(item: Campaign) => (
             <TableRow key={item.id}>
+              {/* Title - always visible */}
               <TableCell>{item.title ?? "-"}</TableCell>
-              <TableCell>
+
+              {/* Status */}
+              <TableCell className="hidden md:table-cell">
                 <Chip
                   size="sm"
                   color={statusColorMap[item.status] ?? "default"}
@@ -204,49 +246,111 @@ const CampaignResult = ({
                   {String(item.status).toLowerCase()}
                 </Chip>
               </TableCell>
-              <TableCell>{item.reward || "-"}</TableCell>
-              <TableCell>{formatDate(item.endDate)}</TableCell>
-              <TableCell>{formatDate(item.created_at || "")}</TableCell>
+
+              {/* Reward */}
+              <TableCell className="hidden md:table-cell">
+                {item.reward || "-"}
+              </TableCell>
+
+              {/* End date */}
+              <TableCell className="hidden md:table-cell">
+                {formatDate(item.endDate)}
+              </TableCell>
+
+              {/* Created at */}
+              <TableCell className="hidden md:table-cell">
+                {formatDate(item.created_at || "")}
+              </TableCell>
+
+              {/* Actions */}
               <TableCell>
                 <div className="flex gap-2">
-                  <Button
-                    as={Link}
-                    size="sm"
-                    variant="flat"
-                    color="primary"
-                    href={makeUrl(LINKS.CAMPAIGN_DETAIL, { id: item.id })}
-                    startContent={<Eye className="size-4" />}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    as={Link}
-                    size="sm"
-                    variant="flat"
-                    color="warning"
-                    href={makeUrl(LINKS.CAMPAIGN_EDIT, { id: item.id })}
-                    startContent={<Edit className="size-4" />}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="danger"
-                    isDisabled={!!removing}
-                    isLoading={removing && removingId === item.id}
-                    onPress={() => {
-                      if (!onRemove) return;
-                      if (typeof window !== "undefined") {
-                        const ok = window.confirm("Remove this campaign?");
-                        if (!ok) return;
-                      }
-                      onRemove(String(item.id));
-                    }}
-                    startContent={<Trash className="size-4" />}
-                  >
-                    Delete
-                  </Button>
+                  {/* Mobile (icons only) */}
+                  <div className="md:hidden flex gap-2">
+                    <Button
+                      as={Link}
+                      size="sm"
+                      isIconOnly
+                      variant="light"
+                      color="primary"
+                      href={makeUrl(LINKS.CAMPAIGN_DETAIL, { id: item.id })}
+                      aria-label="View"
+                    >
+                      <Eye className="size-4" />
+                    </Button>
+                    <Button
+                      as={Link}
+                      size="sm"
+                      isIconOnly
+                      variant="light"
+                      color="warning"
+                      href={makeUrl(LINKS.CAMPAIGN_EDIT, { id: item.id })}
+                      aria-label="Edit"
+                    >
+                      <Edit className="size-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      isIconOnly
+                      variant="light"
+                      color="danger"
+                      isDisabled={!!removing}
+                      isLoading={removing && removingId === item.id}
+                      onPress={() => {
+                        if (!onRemove) return;
+                        if (typeof window !== "undefined") {
+                          const ok = window.confirm("Remove this campaign?");
+                          if (!ok) return;
+                        }
+                        onRemove(String(item.id));
+                      }}
+                      aria-label="Delete"
+                    >
+                      <Trash className="size-4" />
+                    </Button>
+                  </div>
+
+                  {/* Desktop (labels) */}
+                  <div className="hidden md:flex gap-2">
+                    <Button
+                      as={Link}
+                      size="sm"
+                      variant="flat"
+                      color="primary"
+                      href={makeUrl(LINKS.CAMPAIGN_DETAIL, { id: item.id })}
+                      startContent={<Eye className="size-4" />}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      as={Link}
+                      size="sm"
+                      variant="flat"
+                      color="warning"
+                      href={makeUrl(LINKS.CAMPAIGN_EDIT, { id: item.id })}
+                      startContent={<Edit className="size-4" />}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="danger"
+                      isDisabled={!!removing}
+                      isLoading={removing && removingId === item.id}
+                      onPress={() => {
+                        if (!onRemove) return;
+                        if (typeof window !== "undefined") {
+                          const ok = window.confirm("Remove this campaign?");
+                          if (!ok) return;
+                        }
+                        onRemove(String(item.id));
+                      }}
+                      startContent={<Trash className="size-4" />}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </TableCell>
             </TableRow>

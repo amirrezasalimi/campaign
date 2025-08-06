@@ -104,7 +104,7 @@ const Campaigns = () => {
                 >
                   Reset
                 </Button>
-                <div className="text-default-500 text-sm">
+                <div className="hidden md:block text-default-500 text-sm">
                   Page: {page} • Limit: {limit}
                 </div>
               </div>
