@@ -1,6 +1,7 @@
 import MainLayout from "@/shared/components/layouts/main";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import "@/shared/styles/global.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
