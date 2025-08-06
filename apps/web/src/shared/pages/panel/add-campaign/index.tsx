@@ -1,5 +1,7 @@
 "use client";
 
-const AddCampaign = () => {};
+const AddCampaign = () => {
+  return <div>Hello</div>;
+};
 
 export default AddCampaign;
