@@ -121,7 +121,7 @@ router.get("/", async (req, res) => {
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)` })
       .from(campaigns)
-      .where(whereClause as any);
+      .where(whereClause);
 
     const total = Number(count) || 0;
     const total_pages = Math.max(1, Math.ceil(total / take));
@@ -268,6 +268,8 @@ router.patch("/:id", async (req, res) => {
     };
     res.status(200).json(response);
   } catch (err) {
+    console.log("Error editing campaign:", err);
+
     if (err instanceof z.ZodError) {
       const response = {
         success: false,
