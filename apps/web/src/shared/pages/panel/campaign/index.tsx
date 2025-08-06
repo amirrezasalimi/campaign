@@ -120,7 +120,7 @@ const Campaign = () => {
                   <div className="text-default-500 text-sm">Reward</div>
                   <div className="text-default-800">
                     {(() => {
-                      const v = (data as any).reward as
+                      const v = data.reward as
                         | number
                         | string
                         | undefined
