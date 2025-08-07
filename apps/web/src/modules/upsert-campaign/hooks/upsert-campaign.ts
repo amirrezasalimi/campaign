@@ -14,7 +14,15 @@ import LINKS from "@/shared/constants/links";
 export const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  reward: z.coerce.number().min(0, "Reward must be >= 0"),
+  // Treat empty input as missing -> show required. Otherwise coerce and enforce >= 0.
+  reward: z
+    .preprocess(
+      (v) => (v === "" || v === null ? undefined : v),
+      z.coerce
+        .number({ error: "Reward is required" })
+        .min(0, { message: "Reward must be greater than or equal to 0" })
+    )
+    .refine((v) => v !== undefined, { message: "Reward is required" }),
   status: z.enum(["active", "inactive", "completed"]),
   endDate: z
     .string()

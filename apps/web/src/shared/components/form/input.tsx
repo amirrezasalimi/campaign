@@ -35,7 +35,7 @@ function FormInputComponent<T extends FieldValues>(
         <HeroUIInput
           ref={fieldRef || ref}
           name={fieldName}
-          value={value || ""}
+          value={value ?? ""}
           onChange={onChange}
           onBlur={onBlur}
           isInvalid={invalid}
