@@ -10,19 +10,12 @@ import type Campaign from "@/shared/types/campaign/campaign";
 import CampaignServices from "@/shared/services/campaign";
 import makeUrl from "@/shared/utils/make_url";
 import LINKS from "@/shared/constants/links";
+import { zCurrency } from "@/shared/utils/zod-validations";
 
 export const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  // Treat empty input as missing -> show required. Otherwise coerce and enforce >= 0.
-  reward: z
-    .preprocess(
-      (v) => (v === "" || v === null ? undefined : v),
-      z.coerce
-        .number({ error: "Reward is required" })
-        .min(0, { message: "Reward must be greater than or equal to 0" })
-    )
-    .refine((v) => v !== undefined, { message: "Reward is required" }),
+  reward: zCurrency,
   status: z.enum(["active", "inactive", "completed"]),
   endDate: z
     .string()
