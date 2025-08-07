@@ -16,11 +16,9 @@ import LINKS from "@/shared/constants/links";
 import makeUrl from "@/shared/utils/make_url";
 import { ArrowLeft, Pencil, Trash2, RefreshCw } from "lucide-react";
 import { statusColorMap } from "@/shared/utils/statusColorMap";
-import { CampaignStatus } from "@/shared/types/campaign/campaign";
 
 const Campaign = () => {
   const params = useParams();
-  const router = useRouter();
   const id = params?.id as string | undefined;
 
   const {
@@ -40,9 +38,10 @@ const Campaign = () => {
         <CardHeader className="flex justify-between items-center gap-3">
           <div className="flex items-center gap-2">
             <Button
+              as={Link}
+              href={LINKS.CAMPAIGN_LIST}
               size="md"
               variant="light"
-              onPress={() => router.back()}
               startContent={<ArrowLeft className="w-4 h-4" />}
             >
               Back
