@@ -49,14 +49,7 @@ type CampaignResultProps = {
   isMobile?: boolean;
 };
 
-const statusColorMap: Record<
-  CampaignStatus,
-  "success" | "danger" | "warning" | "default"
-> = {
-  [CampaignStatus.ACTIVE]: "success",
-  [CampaignStatus.INACTIVE]: "default",
-  [CampaignStatus.COMPLETED]: "warning",
-};
+import { statusColorMap } from "@/shared/utils/statusColorMap";
 
 type ColumnDef = (
   | { key: "title"; label: "Title" }
@@ -242,8 +235,9 @@ const CampaignResult = ({
                   size="sm"
                   color={statusColorMap[item.status] ?? "default"}
                   variant="flat"
+                  className="capitalize"
                 >
-                  {String(item.status).toLowerCase()}
+                  {String(item.status)}
                 </Chip>
               </TableCell>
 

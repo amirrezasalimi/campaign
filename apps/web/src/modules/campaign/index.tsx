@@ -15,6 +15,8 @@ import useCampaign from "./hooks/campaign";
 import LINKS from "@/shared/constants/links";
 import makeUrl from "@/shared/utils/make_url";
 import { ArrowLeft, Pencil, Trash2, RefreshCw } from "lucide-react";
+import { statusColorMap } from "@/shared/utils/statusColorMap";
+import { CampaignStatus } from "@/shared/types/campaign/campaign";
 
 const Campaign = () => {
   const params = useParams();
@@ -92,15 +94,7 @@ const Campaign = () => {
                   <div className="text-default-800">
                     <Chip
                       variant="flat"
-                      color={
-                        String(data.status) === "active"
-                          ? "success"
-                          : String(data.status) === "inactive"
-                          ? "warning"
-                          : String(data.status) === "completed"
-                          ? "secondary"
-                          : "default"
-                      }
+                      color={statusColorMap[data.status] ?? "default"}
                       size="sm"
                       className="capitalize"
                     >
